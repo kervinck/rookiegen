@@ -13,16 +13,12 @@ fi
 maxPly=$1
 
 sort=sort
-if [ `uname -s` == "Darwin" ]
+if [ `uname -s` = "Darwin" ]
 then
         sort=gsort # For --compress-program option
 fi
 
-tempZip=gzip
-#tempZip=bzip2 # When tight on disk space
-
-GZIP=-1
-BZIP2=-9
+tempZip=lbzip2 # Can use all cores both on OSX and Ubuntu
 
 N=0
 echo 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -,1' |

@@ -1,0 +1,22 @@
+Verification of Peter Oesterlund's rsult:
+http://talkchess.com/forum/viewtopic.php?topic_view=threads&p=508700&t=41032
+
+File size: 96,400,068 6091865401
+63 text bytes per position
+
+perft 5 takes 350 ms on average for Rookie's move generator
+- Without hashing
+- But hash keys are calculated
+- Including SEE
+- Storing in a move lis
+21057207015 perft lines in 351.51 seconds: 59.9 MHz
+
+Estimated time: 9+5
+9183421888 * 0.350 / 3600 = 892832 core hours
+                          = 9300 cluster hours
+                          = 387.5 cluster days
+
+Not good. Need x10 speedup
+10+4 will do (~3M)
+11+3 might be fastest, but requires the creation of temporary 11-ply files
+Alternative: 10+4 with hashing
