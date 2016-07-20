@@ -18,24 +18,28 @@ then
         sort=gsort # For --compress-program option
 fi
 
-tempZip=lbzip2 # Can use all cores both on OSX and Ubuntu
+tempZip=lbzip2     # Can use all cores both on OSX and Ubuntu
+export LBZIP2=-2   # A low level to get small chunks and therefore many cores
+bzipBuffer=1000000
 
 N=0
 echo 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -,1' |
-gzip -c -9 > ply.$N.csv.gz
+bzip2 -c -9 > ply.$N.csv.bz2
 
 while [ $N -le $maxPly ]
 do
-        if [ ! -s ply.$N.csv.gz ]
+        if [ ! -s ply.$N.csv.bz2 ]
         then
-                mkdir -p Temp
                 echo "Expanding $M --> $N"
-                gzip -c -d ply.$M.csv.gz |
+                mkdir -p Temp
+
+                lbzip2 -c -d ply.$M.csv.bz2 |
                 python Tools/expand.py |
-                LC_ALL=C $sort -TTemp --compress-program=$tempZip |
+                LC_ALL=C $sort -TTemp --compress-program=$tempZip --buffer-size=$bzipBuffer |
                 python Tools/combine.py |
-                gzip -9 -c > ply.$N.csv.tmp
-                mv ply.$N.csv.tmp ply.$N.csv.gz
+                lbzip2 -1 -c > ply.$N.csv.tmp
+
+                mv ply.$N.csv.tmp ply.$N.csv.bz2
         fi
         M=$N
         N=`expr $N + 1`
