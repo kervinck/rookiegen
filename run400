@@ -4,8 +4,9 @@
 #       n in 1..400
 #
 
-nrJobs=6
+nrJobs=`python -c 'from multiprocessing import cpu_count as n;print n()'`
 export LC_ALL=C
+bzipBuffer=1000000
 
 sort=sort
 if [ `uname -s` = "Darwin" ]
@@ -21,7 +22,7 @@ expand()
                 python Tools/expand.py | $sort -TTemp --compress-program=lz4 | ./combine |
                 expand `expr $depth - 1`
         else
-                python Tools/expand.py | BZIP2=-1 $sort -TTemp --compress-program=lbzip2 | ./combine
+                python Tools/expand.py | BZIP2=-1 $sort -TTemp --compress-program=lbzip2 --buffer-size=$bzipBuffer | ./combine
         fi 
 }
 
@@ -29,7 +30,7 @@ runRoot()
 {
         ply=$1
         rootPos=$2
-        echo "$rootPos,$ply,\c"
+        /bin/echo -n "$rootPos,$ply,"
         echo "$rootPos,1" |
         expand `expr $ply - 3` |
         parallel -j $nrJobs --block 10M --pipe Tools/xmoves.sh |
