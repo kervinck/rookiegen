@@ -22,6 +22,10 @@ osType:=$(shell uname -s)
 
 CFLAGS:=-std=c11 -Wall -Wextra -O3 -fstrict-aliasing -fomit-frame-pointer
 
+ifeq "$(osType)" "Linux"
+ LDFLAGS:=-lm -lpthread
+endif
+
 #-----------------------------------------------------------------------
 #       Targets
 #-----------------------------------------------------------------------

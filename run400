@@ -32,7 +32,7 @@ runRoot()
         echo "$rootPos,$ply,\c"
         echo "$rootPos,1" |
         expand `expr $ply - 3` |
-        parallel -j $nrJobs --block 10M --pipe ./xmoves |
+        parallel -j $nrJobs --block 10M --pipe Tools/xmoves.sh |
         python Tools/sum.py
 }
 
