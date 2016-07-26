@@ -18,4 +18,4 @@ if count > 0:
         posTotal += count
         print '%s,%d' % (pos, count)
 
-print >>sys.stderr, posCount, posTotal
+#print >>sys.stderr, posCount, posTotal

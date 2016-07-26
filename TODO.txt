@@ -20,3 +20,22 @@ Not good. Need x10 speedup
 10+4 will do (~3M)
 11+3 might be fastest, but requires the creation of temporary 11-ply files
 Alternative: 10+4 with hashing
+
+a(10)
+-----
+
+bzcat ply.8.csv.bz2  | time parallel --pipe --block 10M -j 16 ./rmoves 2 | python sum.py 
+     5456.05 real     40771.91 user       547.51 sys
+69352859712417
+
+bzcat ply.7.csv.bz2  | time parallel --pipe --block 10M -j 16 ./rmoves 3 | python sum.py 
+     9508.35 real     74678.24 user       155.78 sys
+69352859712417
+
+--> Potential for 35 cluster days 1 cluster
+
+a(9)
+----
+time (bzcat ply.6.csv.bz2 | parallel -j 16 --block 10M --pipe ./xmoves | python sum.py)
+2439530234167
+6534.231 user, 131.269 sys, 14m45.00s real (100.00% cpu)

@@ -1,0 +1,47 @@
+#!/bin/sh -e
+#
+# Usage: run400 <n> ...
+#       n in 1..400
+#
+
+nrJobs=6
+export LC_ALL=C
+
+sort=sort
+if [ `uname -s` = "Darwin" ]
+then
+        sort=gsort # For --compress-program option
+fi
+
+expand()
+{
+        depth=$1
+        if [ $depth -gt 1 ]
+        then
+                python Tools/expand.py | $sort -TTemp --compress-program=lz4 | ./combine |
+                expand `expr $depth - 1`
+        else
+                python Tools/expand.py | BZIP2=-1 $sort -TTemp --compress-program=lbzip2 | ./combine
+        fi 
+}
+
+runRoot()
+{
+        ply=$1
+        rootPos=$2
+        echo "$rootPos,$ply,\c"
+        echo "$rootPos,1" |
+        expand `expr $ply - 3` |
+        parallel -j $nrJobs --block 10M --pipe ./xmoves |
+        python Tools/sum.py
+}
+
+ply=$1
+shift
+
+while [ $# -gt 0 ]
+do
+        rootPos=`bzcat ply.2.csv.bz2 | awk -F, -v L=$1 'NR==L{print$1}'`
+        runRoot "$ply" "$rootPos"
+        shift
+done

@@ -1136,8 +1136,8 @@ err_t update_board_after_edit(struct board *bd, int side_to_move)
          |      Test for consistency                            |
          +------------------------------------------------------*/
 
-        err = board_check(bd);
-        check(err);
+        //err = board_check(bd);
+        //check(err);
 
 cleanup:
         return err;

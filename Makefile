@@ -15,6 +15,9 @@
 mainSources:=generate.c layout.c attack.c move.c capture.c promote.c castle.c enpassant.c exchange.c rmoves.c cplus.c
 mainSources:=$(addprefix Source/, $(mainSources))
 
+combineSources:=combine.c cplus.c
+combineSources:=$(addprefix Source/, $(combineSources))
+
 osType:=$(shell uname -s)
 
 CFLAGS:=-std=c11 -Wall -Wextra -O3 -fstrict-aliasing -fomit-frame-pointer
@@ -23,13 +26,16 @@ CFLAGS:=-std=c11 -Wall -Wextra -O3 -fstrict-aliasing -fomit-frame-pointer
 #       Targets
 #-----------------------------------------------------------------------
 
-all: rmoves
+all: combine rmoves
 
 data.c: makeData
 	./makeData > data.c
 
 rmoves: $(wildcard Source/*) data.c Makefile
 	$(CC) $(CFLAGS) -o $@ $(mainSources) data.c $(LDFLAGS)
+
+combine: $(wildcard Source/*) Makefile
+	$(CC) $(CFLAGS) -o $@ $(combineSources) $(LDFLAGS)
 
 makeData: Source/makeData.c
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
