@@ -29,7 +29,7 @@ expand()
 runMultiRoot()
 {
         ply=$1
-        /bin/echo "<runMultiRoot>,$ply,"
+        echo "<runMultiRoot>,$ply,"
         expand `expr $ply - 3` |
         parallel -j $nrJobs --block 10M --pipe Tools/xmoves.sh |
         python Tools/sum.py
