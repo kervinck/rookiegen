@@ -3,7 +3,10 @@
 # 294 is rnbqkbnr/ppppp1pp/5p2/8/8/5P2/PPPPP1PP/RNBQKBNR w KQkq - 
 # SJE: Depth: 12   Count: 32,805,467,443,838,610   Elapsed: 526411  (6.23192e+10 Hz / 1.60464e-11 s)
 
-for ply in 6 7 8 9 #10 11 12
+for ply in 6 7 8 9 10 11 12
 do
-        time ./run400 $ply 294
-done
+        echo
+        echo '---'
+        time ./run400 $ply 291 292 293 294 295 296 297 298 299 300
+done 2>&1 |
+tee -a dryrun.out

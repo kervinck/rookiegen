@@ -4,8 +4,9 @@
 #       n in 1..400
 #
 
-nrJobs=6
+nrJobs=`python -c 'from multiprocessing import cpu_count as n;print n()'`
 export LC_ALL=C
+bzipBuffer=1000000
 
 sort=sort
 if [ `uname -s` = "Darwin" ]
@@ -21,18 +22,16 @@ expand()
                 python Tools/expand.py | $sort -TTemp --compress-program=lz4 | ./combine |
                 expand `expr $depth - 1`
         else
-                python Tools/expand.py | BZIP2=-1 $sort -TTemp --compress-program=lbzip2 | ./combine
+                python Tools/expand.py | BZIP2=-1 $sort -TTemp --compress-program=lbzip2 --buffer-size=$bzipBuffer | ./combine
         fi 
 }
 
-runRoot()
+runMultiRoot()
 {
         ply=$1
-        rootPos=$2
-        echo "$rootPos,$ply,\c"
-        echo "$rootPos,1" |
+        /bin/echo "<runMultiRoot>,$ply,"
         expand `expr $ply - 3` |
-        parallel -j $nrJobs --block 10M --pipe ./xmoves |
+        parallel -j $nrJobs --block 10M --pipe Tools/xmoves.sh |
         python Tools/sum.py
 }
 
@@ -42,6 +41,8 @@ shift
 while [ $# -gt 0 ]
 do
         rootPos=`bzcat ply.2.csv.bz2 | awk -F, -v L=$1 'NR==L{print$1}'`
-        runRoot "$ply" "$rootPos"
+	echo "$rootPos,1" >&2
+	echo "$rootPos,1"
         shift
-done
+done |
+runMultiRoot "$ply"
