@@ -12,11 +12,14 @@
 #       Definitions
 #-----------------------------------------------------------------------
 
-mainSources:=generate.c layout.c attack.c move.c capture.c promote.c castle.c enpassant.c exchange.c rmoves.c cplus.c
-mainSources:=$(addprefix Source/, $(mainSources))
+perftSources:=generate.c layout.c attack.c move.c capture.c promote.c castle.c enpassant.c exchange.c rmoves.c cplus.c
+perftSources:=$(addprefix Source/, $(perftSources))
 
 combineSources:=combine.c cplus.c
 combineSources:=$(addprefix Source/, $(combineSources))
+
+expandSources:=generate.c layout.c attack.c move.c capture.c promote.c castle.c enpassant.c exchange.c expand.c cplus.c format.c
+expandSources:=$(addprefix Source/, $(expandSources))
 
 osType:=$(shell uname -s)
 
@@ -30,16 +33,19 @@ endif
 #       Targets
 #-----------------------------------------------------------------------
 
-all: combine rmoves
+all: combine rmoves expand
 
 data.c: makeData
 	./makeData > data.c
 
 rmoves: $(wildcard Source/*) data.c Makefile
-	$(CC) $(CFLAGS) -o $@ $(mainSources) data.c $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $(perftSources) data.c $(LDFLAGS)
 
 combine: $(wildcard Source/*) Makefile
 	$(CC) $(CFLAGS) -o $@ $(combineSources) $(LDFLAGS)
+
+expand: $(wildcard Source/*) data.c Makefile
+	$(CC) $(CFLAGS) -o $@ $(expandSources) data.c $(LDFLAGS)
 
 makeData: Source/makeData.c
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)

@@ -14,13 +14,13 @@ then
         sort=gsort # For --compress-program option
 fi
 
-expand()
+runExpand()
 {
         depth=$1
         if [ $depth -gt 1 ]
         then
                 python Tools/expand.py | $sort -TTemp --compress-program=lz4 | ./combine |
-                expand `expr $depth - 1`
+                runExpand `expr $depth - 1`
         else
                 python Tools/expand.py | BZIP2=-1 $sort -TTemp --compress-program=lbzip2 --buffer-size=$bzipBuffer | ./combine
         fi 
@@ -32,7 +32,7 @@ runRoot()
         rootPos=$2
         /bin/echo -n "$rootPos,$ply,"
         echo "$rootPos,1" |
-        expand `expr $ply - 3` |
+        runExpand `expr $ply - 3` |
         parallel -j $nrJobs --block 10M --pipe Tools/xmoves.sh |
         python Tools/sum.py
 }
