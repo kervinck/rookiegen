@@ -5,7 +5,7 @@
 # Usage: genUniq.sh <maxPly>
 #
 
-if [ $# -ne 2 ]
+if [ $# -ne 1 ]
 then
         echo "$0: Argument error" 2>&1
         exit

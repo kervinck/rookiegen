@@ -26,12 +26,10 @@ runExpand()
         fi 
 }
 
-runRoot()
+runMultiRoot()
 {
         ply=$1
-        rootPos=$2
-        /bin/echo -n "$rootPos,$ply,"
-        echo "$rootPos,1" |
+        echo "<runMultiRoot>,$ply,"
         runExpand `expr $ply - 3` |
         parallel -j $nrJobs --block 10M --pipe Tools/xmoves.sh |
         python Tools/sum.py
@@ -43,6 +41,8 @@ shift
 while [ $# -gt 0 ]
 do
         rootPos=`bzcat ply.2.csv.bz2 | awk -F, -v L=$1 'NR==L{print$1}'`
-        runRoot "$ply" "$rootPos"
+	echo "$rootPos,1" >&2
+	echo "$rootPos,1"
         shift
-done
+done |
+runMultiRoot "$ply"
